@@ -43,20 +43,41 @@ def pad(x,y):
         y = ['0'] + y
     return x,y
 
-
-
 def subquadratic_multiply(x, y):
+    # this just converts the result from a BinaryNumber to a regular int
+    return _subquadratic_multiply(x,y).decimal_val
+
+
+def _subquadratic_multiply(x, y):
     ### TODO
+    xvec = x.binary_vec
+    yvec = y.binary_vec
+    xvec, yvec = pad(xvec,yvec)
+
+    if (x.decimal_val <= 1) and (y.decimal_val <= 1):
+        return BinaryNumber(x.decimal_val*y.decimal_val)
+    
+    else:
+        x_left, x_right = split_number(xvec)
+        y_left, y_right = split_number(yvec)
+
+        n = len(xvec)
+
+        A = _subquadratic_multiply(x_left,y_left)
+        B = _subquadratic_multiply(BinaryNumber(x_left.decimal_val + x_right.decimal_val), BinaryNumber(y_left.decimal_val + y_right.decimal_val))
+        D = _subquadratic_multiply(x_right,y_right)
+
+        return BinaryNumber(bit_shift(A, n).decimal_val + bit_shift(BinaryNumber(B.decimal_val - A.decimal_val - D.decimal_val), n//2).decimal_val + D.decimal_val)
+
     pass
     ###
-
 
 
 def time_multiply(x, y, f):
     start = time.time()
     # multiply two numbers x, y using function f
+    f(x, y)
     return (time.time() - start)*1000
 
     
     
-
